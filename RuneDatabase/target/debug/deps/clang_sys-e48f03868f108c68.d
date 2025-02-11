@@ -1,0 +1,14 @@
+/Users/suraj/Documents/week3/RuneDatabase/target/debug/deps/libclang_sys-e48f03868f108c68.rmeta: /Users/suraj/.cargo/registry/src/index.crates.io-6f17d22bba15001f/clang-sys-1.8.1/src/lib.rs /Users/suraj/.cargo/registry/src/index.crates.io-6f17d22bba15001f/clang-sys-1.8.1/src/support.rs /Users/suraj/.cargo/registry/src/index.crates.io-6f17d22bba15001f/clang-sys-1.8.1/src/link.rs /Users/suraj/Documents/week3/RuneDatabase/target/debug/build/clang-sys-279746374666cb62/out/macros.rs /Users/suraj/Documents/week3/RuneDatabase/target/debug/build/clang-sys-279746374666cb62/out/common.rs /Users/suraj/Documents/week3/RuneDatabase/target/debug/build/clang-sys-279746374666cb62/out/dynamic.rs
+
+/Users/suraj/Documents/week3/RuneDatabase/target/debug/deps/libclang_sys-e48f03868f108c68.rlib: /Users/suraj/.cargo/registry/src/index.crates.io-6f17d22bba15001f/clang-sys-1.8.1/src/lib.rs /Users/suraj/.cargo/registry/src/index.crates.io-6f17d22bba15001f/clang-sys-1.8.1/src/support.rs /Users/suraj/.cargo/registry/src/index.crates.io-6f17d22bba15001f/clang-sys-1.8.1/src/link.rs /Users/suraj/Documents/week3/RuneDatabase/target/debug/build/clang-sys-279746374666cb62/out/macros.rs /Users/suraj/Documents/week3/RuneDatabase/target/debug/build/clang-sys-279746374666cb62/out/common.rs /Users/suraj/Documents/week3/RuneDatabase/target/debug/build/clang-sys-279746374666cb62/out/dynamic.rs
+
+/Users/suraj/Documents/week3/RuneDatabase/target/debug/deps/clang_sys-e48f03868f108c68.d: /Users/suraj/.cargo/registry/src/index.crates.io-6f17d22bba15001f/clang-sys-1.8.1/src/lib.rs /Users/suraj/.cargo/registry/src/index.crates.io-6f17d22bba15001f/clang-sys-1.8.1/src/support.rs /Users/suraj/.cargo/registry/src/index.crates.io-6f17d22bba15001f/clang-sys-1.8.1/src/link.rs /Users/suraj/Documents/week3/RuneDatabase/target/debug/build/clang-sys-279746374666cb62/out/macros.rs /Users/suraj/Documents/week3/RuneDatabase/target/debug/build/clang-sys-279746374666cb62/out/common.rs /Users/suraj/Documents/week3/RuneDatabase/target/debug/build/clang-sys-279746374666cb62/out/dynamic.rs
+
+/Users/suraj/.cargo/registry/src/index.crates.io-6f17d22bba15001f/clang-sys-1.8.1/src/lib.rs:
+/Users/suraj/.cargo/registry/src/index.crates.io-6f17d22bba15001f/clang-sys-1.8.1/src/support.rs:
+/Users/suraj/.cargo/registry/src/index.crates.io-6f17d22bba15001f/clang-sys-1.8.1/src/link.rs:
+/Users/suraj/Documents/week3/RuneDatabase/target/debug/build/clang-sys-279746374666cb62/out/macros.rs:
+/Users/suraj/Documents/week3/RuneDatabase/target/debug/build/clang-sys-279746374666cb62/out/common.rs:
+/Users/suraj/Documents/week3/RuneDatabase/target/debug/build/clang-sys-279746374666cb62/out/dynamic.rs:
+
+# env-dep:OUT_DIR=/Users/suraj/Documents/week3/RuneDatabase/target/debug/build/clang-sys-279746374666cb62/out
