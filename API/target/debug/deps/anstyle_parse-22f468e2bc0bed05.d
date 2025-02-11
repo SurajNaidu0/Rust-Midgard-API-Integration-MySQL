@@ -1,0 +1,11 @@
+/Users/suraj/Documents/week3/API/target/debug/deps/libanstyle_parse-22f468e2bc0bed05.rmeta: /Users/suraj/.cargo/registry/src/index.crates.io-6f17d22bba15001f/anstyle-parse-0.2.6/src/lib.rs /Users/suraj/.cargo/registry/src/index.crates.io-6f17d22bba15001f/anstyle-parse-0.2.6/src/params.rs /Users/suraj/.cargo/registry/src/index.crates.io-6f17d22bba15001f/anstyle-parse-0.2.6/src/state/mod.rs /Users/suraj/.cargo/registry/src/index.crates.io-6f17d22bba15001f/anstyle-parse-0.2.6/src/state/definitions.rs /Users/suraj/.cargo/registry/src/index.crates.io-6f17d22bba15001f/anstyle-parse-0.2.6/src/state/table.rs
+
+/Users/suraj/Documents/week3/API/target/debug/deps/libanstyle_parse-22f468e2bc0bed05.rlib: /Users/suraj/.cargo/registry/src/index.crates.io-6f17d22bba15001f/anstyle-parse-0.2.6/src/lib.rs /Users/suraj/.cargo/registry/src/index.crates.io-6f17d22bba15001f/anstyle-parse-0.2.6/src/params.rs /Users/suraj/.cargo/registry/src/index.crates.io-6f17d22bba15001f/anstyle-parse-0.2.6/src/state/mod.rs /Users/suraj/.cargo/registry/src/index.crates.io-6f17d22bba15001f/anstyle-parse-0.2.6/src/state/definitions.rs /Users/suraj/.cargo/registry/src/index.crates.io-6f17d22bba15001f/anstyle-parse-0.2.6/src/state/table.rs
+
+/Users/suraj/Documents/week3/API/target/debug/deps/anstyle_parse-22f468e2bc0bed05.d: /Users/suraj/.cargo/registry/src/index.crates.io-6f17d22bba15001f/anstyle-parse-0.2.6/src/lib.rs /Users/suraj/.cargo/registry/src/index.crates.io-6f17d22bba15001f/anstyle-parse-0.2.6/src/params.rs /Users/suraj/.cargo/registry/src/index.crates.io-6f17d22bba15001f/anstyle-parse-0.2.6/src/state/mod.rs /Users/suraj/.cargo/registry/src/index.crates.io-6f17d22bba15001f/anstyle-parse-0.2.6/src/state/definitions.rs /Users/suraj/.cargo/registry/src/index.crates.io-6f17d22bba15001f/anstyle-parse-0.2.6/src/state/table.rs
+
+/Users/suraj/.cargo/registry/src/index.crates.io-6f17d22bba15001f/anstyle-parse-0.2.6/src/lib.rs:
+/Users/suraj/.cargo/registry/src/index.crates.io-6f17d22bba15001f/anstyle-parse-0.2.6/src/params.rs:
+/Users/suraj/.cargo/registry/src/index.crates.io-6f17d22bba15001f/anstyle-parse-0.2.6/src/state/mod.rs:
+/Users/suraj/.cargo/registry/src/index.crates.io-6f17d22bba15001f/anstyle-parse-0.2.6/src/state/definitions.rs:
+/Users/suraj/.cargo/registry/src/index.crates.io-6f17d22bba15001f/anstyle-parse-0.2.6/src/state/table.rs:
