@@ -35,7 +35,7 @@ struct SwapHistoryParams {
 // Query parameters struct for /earninghistory
 #[derive(Debug, Deserialize)]
 struct EarningHistoryParams {
-    pool: Option<String>, // Optional to support network-wide earnings
+    pool: Option<String>,
     #[serde(default)]
     from: Option<i64>,
     #[serde(default)]
@@ -51,7 +51,22 @@ struct EarningHistoryParams {
 // Query parameters struct for /depthandprice
 #[derive(Debug, Deserialize)]
 struct DepthAndPriceParams {
-    pool: String, // Required, like swaphistory
+    pool: String,
+    #[serde(default)]
+    from: Option<i64>,
+    #[serde(default)]
+    to: Option<i64>,
+    #[serde(default)]
+    interval: Option<String>,
+    #[serde(default)]
+    limit: Option<u64>,
+    #[serde(default)]
+    offset: Option<u64>,
+}
+
+// Query parameters struct for /runepoolmember (no pool parameter)
+#[derive(Debug, Deserialize)]
+struct RunePoolMemberParams {
     #[serde(default)]
     from: Option<i64>,
     #[serde(default)]
@@ -273,7 +288,7 @@ async fn handle_swap_history(
     let mut meta_map = serde_json::Map::new();
     meta_map.insert("startTime".to_string(), Value::String(from_date.clone()));
     meta_map.insert("endTime".to_string(), Value::String(to_date.clone()));
-    for (json_field, db_field) in fields.iter().zip(db_fields.iter()).skip(2) { // Skip startTime and endTime
+    for (json_field, db_field) in fields.iter().zip(db_fields.iter()).skip(2) {
         let value = get_string_value(&meta_row, db_field);
         meta_map.insert(json_field.to_string(), Value::String(value));
     }
@@ -521,7 +536,7 @@ async fn handle_earning_history(
     let mut meta_map = serde_json::Map::new();
     meta_map.insert("startTime".to_string(), Value::String(from_date.clone()));
     meta_map.insert("endTime".to_string(), Value::String(to_date.clone()));
-    for (json_field, db_field) in fields.iter().zip(db_fields.iter()).skip(2) { // Skip startTime and endTime
+    for (json_field, db_field) in fields.iter().zip(db_fields.iter()).skip(2) {
         let value = get_string_value(&meta_row, db_field);
         meta_map.insert(json_field.to_string(), Value::String(value));
     }
@@ -699,7 +714,6 @@ async fn handle_depth_and_price(
         }
     };
 
-    // Meta query for depth and price data
     let meta_query = format!(
         "SELECT
          SUM(asset_depth) as asset_depth,
@@ -756,19 +770,16 @@ async fn handle_depth_and_price(
         }
     };
 
-    // Build meta object
     let mut meta_map = serde_json::Map::new();
     meta_map.insert("startTime".to_string(), Value::String(from_date.clone()));
     meta_map.insert("endTime".to_string(), Value::String(to_date.clone()));
-    // Placeholder for priceShiftLoss and luviIncrease (not directly in schema, calculated if needed)
-    meta_map.insert("priceShiftLoss".to_string(), Value::String("0".to_string())); // Placeholder
+    meta_map.insert("priceShiftLoss".to_string(), Value::String("0".to_string()));
     meta_map.insert("luviIncrease".to_string(), Value::String(get_string_value(&meta_row, "luvi")));
     meta_map.insert("startAssetDepth".to_string(), Value::String(get_string_value(&meta_row, "asset_depth")));
     meta_map.insert("startRuneDepth".to_string(), Value::String(get_string_value(&meta_row, "rune_depths")));
     meta_map.insert("startLPUnits".to_string(), Value::String(get_string_value(&meta_row, "liquidity_units")));
     meta_map.insert("startMemberCount".to_string(), Value::String(get_string_value(&meta_row, "members_count")));
     meta_map.insert("startSynthUnits".to_string(), Value::String(get_string_value(&meta_row, "synth_units")));
-    // Using same aggregated values for end* fields as a simplification (could be split with additional logic)
     meta_map.insert("endAssetDepth".to_string(), Value::String(get_string_value(&meta_row, "asset_depth")));
     meta_map.insert("endRuneDepth".to_string(), Value::String(get_string_value(&meta_row, "rune_depths")));
     meta_map.insert("endLPUnits".to_string(), Value::String(get_string_value(&meta_row, "liquidity_units")));
@@ -776,7 +787,6 @@ async fn handle_depth_and_price(
     meta_map.insert("endSynthUnits".to_string(), Value::String(get_string_value(&meta_row, "synth_units")));
     let meta = Value::Object(meta_map);
 
-    // Interval query
     let interval_format = match interval.as_str() {
         "day" => "%Y-%m-%d 00:00:00",
         "week" => "%Y-%v-1 00:00:00",
@@ -829,13 +839,176 @@ async fn handle_depth_and_price(
         let mut interval_map = serde_json::Map::new();
         interval_map.insert("startTime".to_string(), Value::String(get_string_value(&row, "start_time")));
         interval_map.insert("endTime".to_string(), Value::String(get_string_value(&row, "end_time")));
-        interval_map.insert("priceShiftLoss".to_string(), Value::String("0".to_string())); // Placeholder
+        interval_map.insert("priceShiftLoss".to_string(), Value::String("0".to_string()));
         interval_map.insert("luviIncrease".to_string(), Value::String(get_string_value(&row, "luvi")));
         interval_map.insert("startAssetDepth".to_string(), Value::String(get_string_value(&row, "asset_depth")));
         interval_map.insert("startRuneDepth".to_string(), Value::String(get_string_value(&row, "rune_depths")));
         interval_map.insert("startLPUnits".to_string(), Value::String(get_string_value(&row, "liquidity_units")));
         interval_map.insert("startMemberCount".to_string(), Value::String(get_string_value(&row, "members_count")));
         interval_map.insert("startSynthUnits".to_string(), Value::String(get_string_value(&row, "synth_units")));
+        intervals.push(Value::Object(interval_map));
+    }
+
+    println!("Returning response with {} intervals", intervals.len());
+
+    (
+        StatusCode::OK,
+        Json(json!({
+            "meta": meta,
+            "intervals": intervals
+        })),
+    )
+}
+
+// Handler for /runepoolmember endpoint
+async fn handle_rune_pool_member(
+    Query(params): Query<RunePoolMemberParams>,
+    State(state): State<Arc<AppState>>,
+) -> impl IntoResponse {
+    println!("Received request for rune pool member history");
+
+    let table_name = "RUNE_MEMBER"; // Fixed table, no pool parameter
+
+    let from = params.from.unwrap_or_else(|| {
+        let start_of_2020 = Utc.ymd(2020, 1, 1).and_hms(0, 0, 0).timestamp();
+        println!("No 'from' parameter specified, defaulting to 2020-01-01");
+        start_of_2020
+    });
+
+    let to = params.to.unwrap_or_else(|| {
+        let end_of_2030 = Utc.ymd(2030, 12, 31).and_hms(23, 59, 59).timestamp();
+        println!("No 'to' parameter specified, defaulting to 2030-12-31");
+        end_of_2030
+    });
+    let interval = params.interval.unwrap_or_else(|| "hour".to_string());
+    let limit = params.limit.unwrap_or(50);
+    let offset = params.offset.unwrap_or(0);
+
+    let from_date = Utc.timestamp(from, 0).format("%Y-%m-%d %H:%M:%S").to_string();
+    let to_date = Utc.timestamp(to, 0).format("%Y-%m-%d %H:%M:%S").to_string();
+
+    println!("Query date range: {} to {}", from_date, to_date);
+
+    let pool = &state.pool;
+    let mut conn = match pool.get_conn() {
+        Ok(conn) => conn,
+        Err(e) => {
+            println!("Database connection error: {}", e);
+            return (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({
+                    "error": format!("Database connection error: {}", e)
+                })),
+            );
+        }
+    };
+
+    // Meta query for RUNE_MEMBER
+    let meta_query = format!(
+        "SELECT
+         SUM(member_unit) as member_unit,
+         SUM(member_count) as member_count
+        FROM {}
+        WHERE start_time >= ? AND end_time <= ?",
+        table_name
+    );
+
+    println!("Executing meta query with params: {} and {}", from_date, to_date);
+
+    let meta_row_result: Result<Option<Row>, mysql::Error> = conn.exec_first(&meta_query, (from_date.clone(), to_date.clone()));
+
+    let meta_row = match meta_row_result {
+        Ok(Some(row)) => row,
+        Ok(None) => {
+            println!("No data found for the specified criteria");
+            return (
+                StatusCode::OK,
+                Json(json!({
+                    "meta": {
+                        "startTime": from_date,
+                        "endTime": to_date,
+                        "startUnits": "0",
+                        "startCount": "0",
+                        "endUnits": "0",
+                        "endCount": "0"
+                    },
+                    "intervals": []
+                })),
+            );
+        },
+        Err(e) => {
+            println!("Meta query error: {}", e);
+            return (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({
+                    "error": format!("Database query error: {}", e)
+                })),
+            );
+        }
+    };
+
+    // Build meta object
+    let mut meta_map = serde_json::Map::new();
+    meta_map.insert("startTime".to_string(), Value::String(from_date.clone()));
+    meta_map.insert("endTime".to_string(), Value::String(to_date.clone()));
+    meta_map.insert("startUnits".to_string(), Value::String(get_string_value(&meta_row, "member_unit")));
+    meta_map.insert("startCount".to_string(), Value::String(get_string_value(&meta_row, "member_count")));
+    meta_map.insert("endUnits".to_string(), Value::String(get_string_value(&meta_row, "member_unit")));
+    meta_map.insert("endCount".to_string(), Value::String(get_string_value(&meta_row, "member_count")));
+    let meta = Value::Object(meta_map);
+
+    // Interval query
+    let interval_format = match interval.as_str() {
+        "day" => "%Y-%m-%d 00:00:00",
+        "week" => "%Y-%v-1 00:00:00",
+        "month" => "%Y-%m-01 00:00:00",
+        "year" => "%Y-01-01 00:00:00",
+        _ => "%Y-%m-%d %H:00:00",
+    };
+
+    let interval_query = format!(
+        "SELECT
+         DATE_FORMAT(start_time, '{}') as interval_start,
+         MIN(start_time) as start_time,
+         MAX(end_time) as end_time,
+         SUM(member_unit) as member_unit,
+         SUM(member_count) as member_count
+        FROM {}
+        WHERE start_time >= ? AND end_time <= ?
+        GROUP BY interval_start
+        ORDER BY interval_start
+        LIMIT ? OFFSET ?",
+        interval_format, table_name
+    );
+
+    println!("Executing interval query");
+
+    let interval_rows_result: Result<Vec<Row>, mysql::Error> = conn.exec(
+        &interval_query,
+        (from_date, to_date, limit, offset)
+    );
+
+    let interval_rows = match interval_rows_result {
+        Ok(rows) => rows,
+        Err(e) => {
+            println!("Interval query error: {}", e);
+            return (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({
+                    "error": format!("Database query error: {}", e)
+                })),
+            );
+        }
+    };
+
+    // Process intervals
+    let mut intervals = Vec::new();
+    for row in interval_rows {
+        let mut interval_map = serde_json::Map::new();
+        interval_map.insert("startTime".to_string(), Value::String(get_string_value(&row, "start_time")));
+        interval_map.insert("endTime".to_string(), Value::String(get_string_value(&row, "end_time")));
+        interval_map.insert("startUnits".to_string(), Value::String(get_string_value(&row, "member_unit")));
+        interval_map.insert("startCount".to_string(), Value::String(get_string_value(&row, "member_count")));
         intervals.push(Value::Object(interval_map));
     }
 
@@ -875,7 +1048,8 @@ pub async fn start_api_server(mysql_pool: Pool) -> Result<(), Box<dyn std::error
         .route("/", get(index_handler))
         .route("/swaphistory", get(handle_swap_history))
         .route("/earninghistory", get(handle_earning_history))
-        .route("/depthandprice", get(handle_depth_and_price)) // New endpoint
+        .route("/depthandprice", get(handle_depth_and_price))
+        .route("/runepoolmember", get(handle_rune_pool_member))
         .layer(cors)
         .with_state(state);
 
