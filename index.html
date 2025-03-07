@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>THORChain Midgard API</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --primary: #1e90ff;
+      --secondary: #2c3e50;
+      --accent: #00b894;
+      --background: #f5f6fa;
+      --card-bg: #ffffff;
+      --text: #2d3436;
+      --text-light: #636e72;
+      --error: #e74c3c;
+      --success: #2ecc71;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      line-height: 1.6;
+      color: var(--text);
+      background: linear-gradient(135deg, var(--background) 0%, #dfe4ea 100%);
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 1300px;
+      margin: 0 auto;
+      padding: 40px 20px;
+    }
+
+    /* Navigation */
+    .navigation {
+      position: sticky;
+      top: 0;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      z-index: 1000;
+      padding: 15px 0;
+    }
+
+    .nav-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 20px;
+    }
+
+    .nav-logo {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--primary);
+      letter-spacing: 1px;
+    }
+
+    .nav-items {
+      display: flex;
+      gap: 30px;
+    }
+
+    .nav-item {
+      color: var(--secondary);
+      text-decoration: none;
+      font-weight: 600;
+      transition: color 0.3s ease;
+    }
+
+    .nav-item:hover {
+      color: var(--primary);
+    }
+
+    .menu-toggle {
+      display: none;
+      background: none;
+      border: none;
+      font-size: 24px;
+      color: var(--secondary);
+      cursor: pointer;
+    }
+
+    /* Header Section */
+    .api-info {
+      background: var(--card-bg);
+      border-radius: 15px;
+      padding: 40px;
+      margin-bottom: 40px;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .api-info::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 5px;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+    }
+
+    h1 {
+      font-size: 36px;
+      font-weight: 700;
+      color: var(--secondary);
+      margin-bottom: 15px;
+    }
+
+    .app-desc {
+      color: var(--text-light);
+      font-size: 16px;
+      margin: 10px 0;
+    }
+
+    /* Content Sections */
+    h2 {
+      font-size: 28px;
+      font-weight: 600;
+      color: var(--secondary);
+      margin: 40px 0 20px;
+      position: relative;
+    }
+
+    h2::after {
+      content: '';
+      position: absolute;
+      bottom: -5px;
+      left: 0;
+      width: 50px;
+      height: 3px;
+      background: var(--primary);
+    }
+
+    h3 {
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--secondary);
+      margin: 30px 0 15px;
+    }
+
+    .method {
+      background: var(--card-bg);
+      border-radius: 15px;
+      padding: 30px;
+      margin-bottom: 30px;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .method:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    }
+
+    .method-path {
+      background: var(--primary);
+      color: white;
+      padding: 15px 20px;
+      border-radius: 10px;
+      font-size: 18px;
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .up {
+      background: var(--accent);
+      padding: 5px 15px;
+      border-radius: 20px;
+      color: white;
+      text-decoration: none;
+      font-size: 14px;
+      transition: background 0.3s ease;
+    }
+
+    .up:hover {
+      background: #00a67d;
+    }
+
+    .method-summary {
+      font-weight: 600;
+      color: var(--secondary);
+      margin-bottom: 15px;
+    }
+
+    .method-notes {
+      color: var(--text-light);
+      font-size: 15px;
+      margin-bottom: 20px;
+      background: #f8f9fa;
+      padding: 15px;
+      border-radius: 8px;
+    }
+
+    pre {
+      background: #2d3436;
+      color: #dfe4ea;
+      padding: 20px;
+      border-radius: 10px;
+      overflow-x: auto;
+      font-family: 'Consolas', monospace;
+      font-size: 14px;
+    }
+
+    pre.get {
+      background: linear-gradient(135deg, var(--primary), #3498db);
+    }
+
+    code {
+      font-family: 'Consolas', monospace;
+    }
+
+    .nickname {
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    .param {
+      background: #f8f9fa;
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-weight: 500;
+      margin: 5px 0;
+    }
+
+    .param-desc {
+      color: var(--text-light);
+      padding: 5px 20px;
+    }
+
+    .param-type {
+      color: var(--primary);
+      font-style: italic;
+    }
+
+    /* API Tester */
+    .api-tester {
+      margin: 20px 0;
+      padding: 20px;
+      background: #f8f9fa;
+      border-radius: 10px;
+    }
+
+    .api-tester input, .api-tester select {
+      padding: 10px;
+      margin: 5px 0;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      width: 100%;
+      max-width: 300px;
+    }
+
+    .api-tester button {
+      padding: 10px 20px;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    .api-tester button:hover {
+      background: #1873cc;
+    }
+
+    #response {
+      margin-top: 20px;
+      padding: 15px;
+      background: #2d3436;
+      color: #dfe4ea;
+      border-radius: 10px;
+      white-space: pre-wrap;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+
+    /* Tables */
+    .responses-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+    }
+
+    .responses-table th,
+    .responses-table td {
+      padding: 15px;
+      text-align: left;
+      border-bottom: 1px solid #eee;
+    }
+
+    .responses-table th {
+      background: var(--primary);
+      color: white;
+      font-weight: 600;
+    }
+
+    .responses-table tr:hover {
+      background: #f8f9fa;
+    }
+
+    /* Footer */
+    footer {
+      padding: 20px;
+      text-align: center;
+      color: white;
+      background: var(--secondary);
+      margin-top: 40px;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .menu-toggle {
+        display: block;
+      }
+
+      .nav-items {
+        display: none;
+        flex-direction: column;
+        position: absolute;
+        top: 60px;
+        left: 0;
+        right: 0;
+        background: white;
+        padding: 20px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+      }
+
+      .nav-items.active {
+        display: flex;
+      }
+
+      .api-tester input, .api-tester select {
+        max-width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="navigation">
+  <div class="nav-container">
+    <div class="nav-logo">THORChain Midgard API</div>
+    <button class="menu-toggle" id="menu-toggle">
+      <i class="fas fa-bars"></i>
+    </button>
+    <div class="nav-items" id="nav-items">
+      <a href="#__Methods" class="nav-item">Endpoints</a>
+      <a href="#__Models" class="nav-item">Models</a>
+      <a href="https://github.com/SurajNaidu0/Rust-Midgard-API-Integration-MySQL" class="nav-item" target="_blank">GitHub</a>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="api-info">
+    <h1>THORChain Midgard API</h1>
+    <div class="app-desc">
+      A powerful Rust-based API integrating Midgard data with MySQL for THORChain analytics.
+    </div>
+    <div class="app-desc">Version: 1.0.0 | Developed by Suraj Naidu</div>
+  </div>
+
+  <h2><a name="__Methods">API Endpoints</a></h2>
+  <h3>Table of Contents</h3>
+  <ul>
+    <li><a href="#swaphistoryGet"><code><span class="http-method">GET</span> /swaphistory</code></a> - Retrieve swap history</li>
+    <li><a href="#earninghistoryGet"><code><span class="http-method">GET</span> /earninghistory</code></a> - Retrieve earning history</li>
+    <li><a href="#depthandpriceGet"><code><span class="http-method">GET</span> /depthandprice</code></a> - Retrieve depth and price data</li>
+    <li><a href="#runepoolmemberGet"><code><span class="http-method">GET</span> /runepoolmember</code></a> - Retrieve rune pool member data</li>
+  </ul>
+
+  <div class="method" id="swaphistoryGet">
+    <div class="method-path">
+      <pre class="get"><code><span class="http-method">GET</span> /swaphistory</code></pre>
+      <a class="up" href="#__Methods">↑</a>
+    </div>
+    <div class="method-summary">
+      Retrieve Swap History (<span class="nickname">swaphistoryGet</span>)
+    </div>
+    <div class="method-notes">
+      Fetch aggregated swap metrics and interval-based data for a specified pool.
+    </div>
+
+    <h3 class="field-label">Query Parameters</h3>
+    <div class="field-items">
+      <div class="param">pool (required)</div>
+      <div class="param-desc"><span class="param-type">Query Parameter</span> — Pool name (e.g., <code>BTC.BTC</code>, <code>ETH.ETH</code>)</div>
+      <div class="param">from (optional)</div>
+      <div class="param-desc"><span class="param-type">Query Parameter</span> — Start timestamp (Unix). Default: 1577836800</div>
+      <div class="param">to (optional)</div>
+      <div class="param-desc"><span class="param-type">Query Parameter</span> — End timestamp (Unix). Default: 1893455999</div>
+      <div class="param">interval (optional)</div>
+      <div class="param-desc"><span class="param-type">Query Parameter</span> — Aggregation interval (hour, day, week, month, year). Default: hour</div>
+      <div class="param">limit (optional)</div>
+      <div class="param-desc"><span class="param-type">Query Parameter</span> — Max records. Default: 50</div>
+      <div class="param">offset (optional)</div>
+      <div class="param-desc"><span class="param-type">Query Parameter</span> — Records to skip. Default: 0</div>
+    </div>
+
+    <div class="api-tester">
+      <h3>Test Endpoint</h3>
+      <select id="swap-pool">
+        <option value="BTC.BTC">BTC.BTC</option>
+        <option value="ETH.ETH">ETH.ETH</option>
+        <option value="ETH.USDT-0XDAC17F958D2EE523A2206206994597C13D831EC7">ETH.USDT</option>
+        <option value="ETH.USDC-0XA0B86991C6218B36C1D19D4A2E9EB0CE3606EB48">ETH.USDC</option>
+      </select>
+      <input type="number" id="swap-from" placeholder="From (Unix timestamp)">
+      <input type="number" id="swap-to" placeholder="To (Unix timestamp)">
+      <select id="swap-interval">
+        <option value="hour">Hour</option>
+        <option value="day">Day</option>
+        <option value="week">Week</option>
+        <option value="month">Month</option>
+        <option value="year">Year</option>
+      </select>
+      <input type="number" id="swap-limit" placeholder="Limit (default: 50)">
+      <input type="number" id="swap-offset" placeholder="Offset (default: 0)">
+      <button onclick="testEndpoint('swaphistory')">Test API</button>
+      <pre id="swap-response"></pre>
+    </div>
+
+    <h3 class="field-label">Return Type</h3>
+    <div class="return-type"><a href="#SwapHistoryResponse">SwapHistoryResponse</a></div>
+
+    <h3 class="field-label">Example Response</h3>
+    <pre><code>{
+  "meta": {
+    "startTime": "2024-11-08 10:00:00",
+    "endTime": "2024-11-08 13:00:00",
+    "toAssetCount": "150",
+    "toRuneCount": "200",
+    "totalVolumeUSD": "500000",
+    "totalFees": "2500",
+    "averageSlip": "0.015",
+    "runePriceUSD": "5.25"
+  },
+  "intervals": [
+    {
+      "startTime": "2024-11-08 10:00:00",
+      "endTime": "2024-11-08 11:00:00",
+      "toAssetCount": "50",
+      "toRuneCount": "70",
+      "totalVolumeUSD": "150000",
+      "totalFees": "750",
+      "averageSlip": "0.012"
+    }
+  ]
+}</code></pre>
+
+    <h3 class="field-label">Responses</h3>
+    <table class="responses-table">
+      <thead><tr><th>Status</th><th>Description</th></tr></thead>
+      <tbody>
+      <tr><td>200</td><td>Successful response</td></tr>
+      <tr><td>400</td><td>Invalid pool name</td></tr>
+      <tr><td>500</td><td>Server error</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="method" id="earninghistoryGet">
+    <div class="method-path">
+      <pre class="get"><code><span class="http-method">GET</span> /earninghistory</code></pre>
+      <a class="up" href="#__Methods">↑</a>
+    </div>
+    <div class="method-summary">
+      Retrieve Earning History (<span class="nickname">earninghistoryGet</span>)
+    </div>
+    <div class="method-notes">
+      Fetch earning data for a pool or overall network earnings if no pool specified.
+    </div>
+
+    <h3 class="field-label">Query Parameters</h3>
+    <div class="field-items">
+      <div class="param">pool (optional)</div>
+      <div class="param-desc"><span class="param-type">Query Parameter</span> — Pool name (e.g., <code>BTC.BTC</code>)</div>
+      <div class="param">from (optional)</div>
+      <div class="param-desc"><span class="param-type">Query Parameter</span> — Start timestamp (Unix). Default: 1577836800</div>
+      <div class="param">to (optional)</div>
+      <div class="param-desc"><span class="param-type">Query Parameter</span> — End timestamp (Unix). Default: 1893455999</div>
+      <div class="param">interval (optional)</div>
+      <div class="param-desc"><span class="param-type">Query Parameter</span> — Aggregation interval. Default: hour</div>
+      <div class="param">limit (optional)</div>
+      <div class="param-desc"><span class="param-type">Query Parameter</span> — Max records. Default: 50</div>
+      <div class="param">offset (optional)</div>
+      <div class="param-desc"><span class="param-type">Query Parameter</span> — Records to skip. Default: 0</div>
+    </div>
+
+    <div class="api-tester">
+      <h3>Test Endpoint</h3>
+      <select id="earn-pool">
+        <option value="">No Pool (Overall)</option>
+        <option value="BTC.BTC">BTC.BTC</option>
+        <option value="ETH.ETH">ETH.ETH</option>
+        <option value="ETH.USDT-0XDAC17F958D2EE523A2206206994597C13D831EC7">ETH.USDT</option>
+        <option value="ETH.USDC-0XA0B86991C6218B36C1D19D4A2E9EB0CE3606EB48">ETH.USDC</option>
+      </select>
+      <input type="number" id="earn-from" placeholder="From (Unix timestamp)">
+      <input type="number" id="earn-to" placeholder="To (Unix timestamp)">
+      <select id="earn-interval">
+        <option value="hour">Hour</option>
+        <option value="day">Day</option>
+        <option value="week">Week</option>
+        <option value="month">Month</option>
+        <option value="year">Year</option>
+      </select>
+      <input type="number" id="earn-limit" placeholder="Limit (default: 50)">
+      <input type="number" id="earn-offset" placeholder="Offset (default: 0)">
+      <button onclick="testEndpoint('earninghistory')">Test API</button>
+      <pre id="earn-response"></pre>
+    </div>
+
+    <h3 class="field-label">Return Type</h3>
+    <div class="return-type"><a href="#EarningHistoryResponse">EarningHistoryResponse</a></div>
+
+    <h3 class="field-label">Example Response</h3>
+    <pre><code>{
+  "meta": {
+    "startTime": "2024-11-08 10:00:00",
+    "endTime": "2024-11-08 13:00:00",
+    "liquidityFees": "1200",
+    "blockRewards": "500",
+    "earnings": "1700",
+    "bondingEarnings": "300",
+    "liquidityEarnings": "900",
+    "avgNodeCount": "0",
+    "runePriceUSD": "5.25"
+  },
+  "intervals": [
+    {
+      "startTime": "2024-11-08 10:00:00",
+      "endTime": "2024-11-08 11:00:00",
+      "liquidityFees": "400",
+      "blockRewards": "150",
+      "earnings": "550",
+      "bondingEarnings": "100",
+      "liquidityEarnings": "300",
+      "avgNodeCount": "0"
+    }
+  ]
+}</code></pre>
+
+    <h3 class="field-label">Responses</h3>
+    <table class="responses-table">
+      <thead><tr><th>Status</th><th>Description</th></tr></thead>
+      <tbody>
+      <tr><td>200</td><td>Successful response</td></tr>
+      <tr><td>400</td><td>Invalid pool name</td></tr>
+      <tr><td>500</td><td>Server error</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="method" id="depthandpriceGet">
+    <div class="method-path">
+      <pre class="get"><code><span class="http-method">GET</span> /depthandprice</code></pre>
+      <a class="up" href="#__Methods">↑</a>
+    </div>
+    <div class="method-summary">
+      Retrieve Depth and Price Data (<span class="nickname">depthandpriceGet</span>)
+    </div>
+    <div class="method-notes">
+      Fetch depth, price, and liquidity metrics for a specified pool.
+    </div>
+
+    <h3 class="field-label">Query Parameters</h3>
+    <div class="field-items">
+      <div class="param">pool (required)</div>
+      <div class="param-desc"><span class="param-type">Query Parameter</span> — Pool name (e.g., <code>BTC.BTC</code>)</div>
+      <div class="param">from (optional)</div>
+      <div class="param-desc"><span class="param-type">Query Parameter</span> — Start timestamp (Unix). Default: 1577836800</div>
+      <div class="param">to (optional)</div>
+      <div class="param-desc"><span class="param-type">Query Parameter</span> — End timestamp (Unix). Default: 1893455999</div>
+      <div class="param">interval (optional)</div>
+      <div class="param-desc"><span class="param-type">Query Parameter</span> — Aggregation interval. Default: hour</div>
+      <div class="param">limit (optional)</div>
+      <div class="param-desc"><span class="param-type">Query Parameter</span> — Max records. Default: 50</div>
+      <div class="param">offset (optional)</div>
+      <div class="param-desc"><span class="param-type">Query Parameter</span> — Records to skip. Default: 0</div>
+    </div>
+
+    <div class="api-tester">
+      <h3>Test Endpoint</h3>
+      <select id="depth-pool">
+        <option value="BTC.BTC">BTC.BTC</option>
+        <option value="ETH.ETH">ETH.ETH</option>
+        <option value="ETH.USDT-0XDAC17F958D2EE523A2206206994597C13D831EC7">ETH.USDT</option>
+        <option value="ETH.USDC-0XA0B86991C6218B36C1D19D4A2E9EB0CE3606EB48">ETH.USDC</option>
+      </select>
+      <input type="number" id="depth-from" placeholder="From (Unix timestamp)">
+      <input type="number" id="depth-to" placeholder="To (Unix timestamp)">
+      <select id="depth-interval">
+        <option value="hour">Hour</option>
+        <option value="day">Day</option>
+        <option value="week">Week</option>
+        <option value="month">Month</option>
+        <option value="year">Year</option>
+      </select>
+      <input type="number" id="depth-limit" placeholder="Limit (default: 50)">
+      <input type="number" id="depth-offset" placeholder="Offset (default: 0)">
+      <button onclick="testEndpoint('depthandprice')">Test API</button>
+      <pre id="depth-response"></pre>
+    </div>
+
+    <h3 class="field-label">Return Type</h3>
+    <div class="return-type"><a href="#DepthAndPriceResponse">DepthAndPriceResponse</a></div>
+
+    <h3 class="field-label">Example Response</h3>
+    <pre><code>{
+  "meta": {
+    "startTime": "2024-11-08 10:00:00",
+    "endTime": "2024-11-08 13:00:00",
+    "priceShiftLoss": "0",
+    "luviIncrease": "0.002",
+    "startAssetDepth": "1000",
+    "startRuneDepth": "5000",
+    "startLPUnits": "750",
+    "startMemberCount": "25",
+    "startSynthUnits": "50",
+    "endAssetDepth": "1000",
+    "endRuneDepth": "5000",
+    "endLPUnits": "750",
+    "endMemberCount": "25",
+    "endSynthUnits": "50"
+  },
+  "intervals": [
+    {
+      "startTime": "2024-11-08 10:00:00",
+      "endTime": "2024-11-08 11:00:00",
+      "priceShiftLoss": "0",
+      "luviIncrease": "0.001",
+      "startAssetDepth": "990",
+      "startRuneDepth": "4950",
+      "startLPUnits": "740",
+      "startMemberCount": "24",
+      "startSynthUnits": "48"
+    }
+  ]
+}</code></pre>
+
+    <h3 class="field-label">Responses</h3>
+    <table class="responses-table">
+      <thead><tr><th>Status</th><th>Description</th></tr></thead>
+      <tbody>
+      <tr><td>200</td><td>Successful response</td></tr>
+      <tr><td>400</td><td>Invalid pool name</td></tr>
+      <tr><td>500</td><td>Server error</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="method" id="runepoolmemberGet">
+    <div class="method-path">
+      <pre class="get"><code><span class="http-method">GET</span> /runepoolmember</code></pre>
+      <a class="up" href="#__Methods">↑</a>
+    </div>
+    <div class="method-summary">
+      Retrieve Rune Pool Member Data (<span class="nickname">runepoolmemberGet</span>)
+    </div>
+    <div class="method-notes">
+      Fetch member units and counts for the rune pool.
+    </div>
+
+    <h3 class="field-label">Query Parameters</h3>
+    <div class="field-items">
+      <div class="param">from (optional)</div>
+      <div class="param-desc"><span class="param-type">Query Parameter</span> — Start timestamp (Unix). Default: 1577836800</div>
+      <div class="param">to (optional)</div>
+      <div class="param-desc"><span class="param-type">Query Parameter</span> — End timestamp (Unix). Default: 1893455999</div>
+      <div class="param">interval (optional)</div>
+      <div class="param-desc"><span class="param-type">Query Parameter</span> — Aggregation interval. Default: hour</div>
+      <div class="param">limit (optional)</div>
+      <div class="param-desc"><span class="param-type">Query Parameter</span> — Max records. Default: 50</div>
+      <div class="param">offset (optional)</div>
+      <div class="param-desc"><span class="param-type">Query Parameter</span> — Records to skip. Default: 0</div>
+    </div>
+
+    <div class="api-tester">
+      <h3>Test Endpoint</h3>
+      <input type="number" id="rune-from" placeholder="From (Unix timestamp)">
+      <input type="number" id="rune-to" placeholder="To (Unix timestamp)">
+      <select id="rune-interval">
+        <option value="hour">Hour</option>
+        <option value="day">Day</option>
+        <option value="week">Week</option>
+        <option value="month">Month</option>
+        <option value="year">Year</option>
+      </select>
+      <input type="number" id="rune-limit" placeholder="Limit (default: 50)">
+      <input type="number" id="rune-offset" placeholder="Offset (default: 0)">
+      <button onclick="testEndpoint('runepoolmember')">Test API</button>
+      <pre id="rune-response"></pre>
+    </div>
+
+    <h3 class="field-label">Return Type</h3>
+    <div class="return-type"><a href="#RunePoolMemberResponse">RunePoolMemberResponse</a></div>
+
+    <h3 class="field-label">Example Response</h3>
+    <pre><code>{
+  "meta": {
+    "startTime": "2024-11-08 10:00:00",
+    "endTime": "2024-11-08 13:00:00",
+    "startUnits": "10000",
+    "startCount": "150",
+    "endUnits": "10000",
+    "endCount": "150"
+  },
+  "intervals": [
+    {
+      "startTime": "2024-11-08 10:00:00",
+      "endTime": "2024-11-08 11:00:00",
+      "startUnits": "9900",
+      "startCount": "148"
+    }
+  ]
+}</code></pre>
+
+    <h3 class="field-label">Responses</h3>
+    <table class="responses-table">
+      <thead><tr><th>Status</th><th>Description</th></tr></thead>
+      <tbody>
+      <tr><td>200</td><td>Successful response</td></tr>
+      <tr><td>500</td><td>Server error</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2><a name="__Models">Models</a></h2>
+  <div class="method">
+    <h3><a name="SwapHistoryResponse">SwapHistoryResponse</a> <a class="up" href="#__Models">↑</a></h3>
+    <div class="field-items">
+      <div class="param">meta</div>
+      <div class="param-desc"><span class="param-type">Object</span> — Aggregated swap metrics</div>
+      <div class="param">intervals</div>
+      <div class="param-desc"><span class="param-type">Array</span> — Interval-based swap data</div>
+    </div>
+  </div>
+
+  <div class="method">
+    <h3><a name="EarningHistoryResponse">EarningHistoryResponse</a> <a class="up" href="#__Models">↑</a></h3>
+    <div class="field-items">
+      <div class="param">meta</div>
+      <div class="param-desc"><span class="param-type">Object</span> — Aggregated earning metrics</div>
+      <div class="param">intervals</div>
+      <div class="param-desc"><span class="param-type">Array</span> — Interval-based earning data</div>
+    </div>
+  </div>
+
+  <div class="method">
+    <h3><a name="DepthAndPriceResponse">DepthAndPriceResponse</a> <a class="up" href="#__Models">↑</a></h3>
+    <div class="field-items">
+      <div class="param">meta</div>
+      <div class="param-desc"><span class="param-type">Object</span> — Aggregated depth and price metrics</div>
+      <div class="param">intervals</div>
+      <div class="param-desc"><span class="param-type">Array</span> — Interval-based depth data</div>
+    </div>
+  </div>
+
+  <div class="method">
+    <h3><a name="RunePoolMemberResponse">RunePoolMemberResponse</a> <a class="up" href="#__Models">↑</a></h3>
+    <div class="field-items">
+      <div class="param">meta</div>
+      <div class="param-desc"><span class="param-type">Object</span> — Aggregated member stats</div>
+      <div class="param">intervals</div>
+      <div class="param-desc"><span class="param-type">Array</span> — Interval-based member data</div>
+    </div>
+  </div>
+
+  <footer>
+    <p>THORChain Midgard API © 2025 | <a href="https://github.com/SurajNaidu0" style="color: var(--accent);">Suraj Naidu</a></p>
+  </footer>
+</div>
+
+<script>
+  // Mobile menu toggle
+  document.getElementById("menu-toggle").addEventListener("click", () => {
+    document.getElementById("nav-items").classList.toggle("active");
+  });
+
+  // Smooth scrolling
+  document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener("click", function(e) {
+      e.preventDefault();
+      document.querySelector(this.getAttribute("href")).scrollIntoView({ behavior: "smooth" });
+    });
+  });
+
+  // API testing function
+  async function testEndpoint(endpoint) {
+    const baseUrl = "http://127.0.0.1:8080"; // Update this if your server runs elsewhere
+    let url = `${baseUrl}/${endpoint}?`;
+    const responseEl = document.getElementById(`${endpoint.split('/')[0]}-response`);
+
+    try {
+      // Build query parameters based on endpoint
+      if (endpoint === "swaphistory" || endpoint === "depthandprice") {
+        const pool = document.getElementById(`${endpoint.split('/')[0]}-pool`).value;
+        if (!pool) throw new Error("Pool is required");
+        url += `pool=${encodeURIComponent(pool)}`;
+      } else if (endpoint === "earninghistory") {
+        const pool = document.getElementById("earn-pool").value;
+        if (pool) url += `pool=${encodeURIComponent(pool)}`;
+      }
+
+      const from = document.getElementById(`${endpoint.split('/')[0]}-from`).value;
+      const to = document.getElementById(`${endpoint.split('/')[0]}-to`).value;
+      const interval = document.getElementById(`${endpoint.split('/')[0]}-interval`).value;
+      const limit = document.getElementById(`${endpoint.split('/')[0]}-limit`).value;
+      const offset = document.getElementById(`${endpoint.split('/')[0]}-offset`).value;
+
+      if (from) url += `&from=${from}`;
+      if (to) url += `&to=${to}`;
+      if (interval) url += `&interval=${interval}`;
+      if (limit) url += `&limit=${limit}`;
+      if (offset) url += `&offset=${offset}`;
+
+      responseEl.textContent = "Fetching...";
+      responseEl.style.color = "#dfe4ea";
+
+      const response = await fetch(url);
+      const data = await response.json();
+
+      if (!response.ok) throw new Error(data.error || "Request failed");
+
+      responseEl.textContent = JSON.stringify(data, null, 2);
+      responseEl.style.color = "#2ecc71";
+    } catch (error) {
+      responseEl.textContent = `Error: ${error.message}`;
+      responseEl.style.color = "#e74c3c";
+    }
+  }
+</script>
+</body>
+</html>

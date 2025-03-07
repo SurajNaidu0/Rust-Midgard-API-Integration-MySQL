@@ -13,6 +13,7 @@ use serde_json::{json, Value};
 use std::collections::HashMap;
 use std::net::SocketAddr;
 use std::sync::Arc;
+use axum::response::Html;
 use tokio::net::TcpListener;
 use crate::MidgardData::DATA;
 
@@ -1023,6 +1024,18 @@ async fn handle_rune_pool_member(
     )
 }
 
+pub async fn serve_documentation() -> impl IntoResponse {
+    // Read the HTML file from disk
+    match std::fs::read_to_string("./index.html") {
+        Ok(content) => {
+            Html(content)
+        },
+        Err(_) => {
+            Html("<h1>Documentation not found</h1>".to_string())
+        }
+    }
+}
+
 // Application state
 struct AppState {
     pool: Pool,
@@ -1045,7 +1058,7 @@ pub async fn start_api_server(mysql_pool: Pool) -> Result<(), Box<dyn std::error
         .allow_headers(tower_http::cors::Any);
 
     let app = Router::new()
-        .route("/", get(index_handler))
+        .route("/", get(serve_documentation))
         .route("/swaphistory", get(handle_swap_history))
         .route("/earninghistory", get(handle_earning_history))
         .route("/depthandprice", get(handle_depth_and_price))
